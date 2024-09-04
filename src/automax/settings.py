@@ -11,9 +11,15 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
 from pathlib import Path
-import os
+import environ
+import os 
 
 from django.contrib.messages import constants as messages
+
+#Initializing environ
+
+env = environ.Env()
+env.read_env()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -23,10 +29,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-0s$btx@s4*@0#5sz84&b3%1k39^%z-)303$wost4c=y85p0ekd'
+SECRET_KEY = env('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = True if env('DEBUG') == 'True' else False
 
 ALLOWED_HOSTS = ['*']
 
@@ -84,14 +90,27 @@ WSGI_APPLICATION = 'automax.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
-DATABASES = {
+if env('USEDEBUGDB') == 'True':
+  DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
     }
-}
+  }
+  
+else:  
+      DATABASES = {
+        'default': {
+          'ENGINE': 'django.db.backends.postgresql_psycopg2',
+          'NAME': env('DBNAME'),
+          'USER': env('DBUSER'),
+          'PASSWORD': env('DBPASSWORD'),
+          'HOST': env('DBHOST'),
+          'PORT': env('DBPORT'),
+    }
+  }
 
-
+# postgresql://greencode_user:CRkKZ1BuKp5o58hD6BM0S7mpdBA0tfoa@dpg-cqajbfiju9rs73blcpj0-a/greencode
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
 
@@ -142,9 +161,24 @@ STATIC_URL = 'static/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
 
+# DEFAULT_FILE_STORAGE='storages.backends.s3boto3.S3Boto3Storage'
+
+AWS_ACCESS_KEY_ID = env('AWS_ACCESS_KEY_ID')
+AWS_SECRET_KEY = env('AWS_SECRET_KEY')
+
 # Django crispy forms settings
 
 CRISPY_TEMPLATE_PACK ='bootstrap4'
+
+# Email settings 
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS =True
+EMAIL_USE_SSL = False
+EMAIL_HOST_USER = env('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
