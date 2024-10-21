@@ -10,7 +10,7 @@ class UserForm(forms.ModelForm):
     username = forms.CharField(disabled=True) #this will make the user not be able to change the username once set
     class Meta:
         model = User
-        fields = ('username', 'first_name','last_name')
+        fields = ('username', 'first_name','last_name','email')
 
 
 class ProfileForm(forms.ModelForm):

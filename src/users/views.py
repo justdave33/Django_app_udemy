@@ -92,7 +92,10 @@ class ProfileView(View):
                  profile_form.save()
                  location_form.save()
                  messages.success(request, 'Profile Updated Successfully!')
-                 return render(request, 'views/profile.html', {
+                 return redirect('profile')
+        else:
+            messages.error(request,'Error Updating Profile')         
+        return render(request, 'views/profile.html', {
                      'user_form': user_form,
                      'profile_form': profile_form, 
                      'location_form': location_form,
